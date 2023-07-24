@@ -17,15 +17,15 @@ if (!function_exists('spf')) {
     /**
      * spf function  Easy way to use sprintf
      *
-    *
-    * ```php
-    * spf('aa %s %d', 123, 34); // "aa 123 34"
-    * ```
-    *
-    * @param string $firstString
-    * @param float|int|string ...$params
-    *
-    * @return string
+     *
+     * ```php
+     * spf('aa %s %d', 123, 34); // "aa 123 34"
+     * ```
+     *
+     * @param string $firstString
+     * @param float|int|string ...$params
+     *
+     * @return string
      */
     function spf(string $firstString, ...$params): string
     {
