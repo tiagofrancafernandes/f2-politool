@@ -10,7 +10,7 @@
         "tools",
         "tiagof2"
     ],
-    "homepage": "https://tiagofranca.com",
+    "homepage": "https://github.com/tiagofrancafernandes/f2-politool",
     "authors": [
         {
             "name": "Tiago França",
@@ -22,7 +22,10 @@
             "TiagoF2\\Expansions\\": "src/Expansions/",
             "TiagoF2\\Helpers\\": "src/Helpers/",
             "TiagoF2\\StaticModel\\": "src/StaticModel/"
-        }
+        },
+        "files": [
+            "src/global_functions/helpers.php"
+        ]
     },
     "require": {
         "php": "^7.2|^8.0|^8.1",
