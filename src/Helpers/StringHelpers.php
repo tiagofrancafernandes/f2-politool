@@ -37,10 +37,12 @@ class StringHelpers
     {
         // For new versions of PHP this is more easy. Only float|int|string ...$params
 
-        $params = array_filter(array_values($params), function ($item) {
-            return is_numeric($item) || is_string($item);
-        });
+        $params = array_values($params);
 
-        return sprintf($firstString, ...$params);
+        foreach ($params as $key => $item) {
+            $params[$key] = trim(var_export($item, true), "'");
+        }
+
+        return sprintf($firstString, ...array_values($params));
     }
 }
