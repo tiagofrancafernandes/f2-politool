@@ -1,6 +1,6 @@
 {
     "name": "tiagof2/f2-politool",
-    "description": "Some helpers for Laravel and no Laravel",
+    "description": "Some helpers for Laravel and [some] for without Laravel projects",
     "license": "MIT",
     "keywords": [
         "classes",
@@ -28,11 +28,22 @@
         ]
     },
     "require": {
-        "php": "^7.2|^8.0|^8.1|^8.2",
+        "php": "^7.2|^8.0|^8.1|^8.2|^8.3",
         "ext-json": "*",
         "illuminate/contracts": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "illuminate/pagination": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
         "illuminate/support": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
-        "illuminate/pagination": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0"
+        "illuminate/http": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "illuminate/macroable": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "illuminate/config": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "illuminate/collections": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "illuminate/process": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "illuminate/pipeline": "^5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "nesbot/carbon": "^2.0|^3.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0|^2.0",
+        "barryvdh/laravel-ide-helper": "^2.0|^3.0|^4.0"
     },
     "config": {
         "sort-packages": true,

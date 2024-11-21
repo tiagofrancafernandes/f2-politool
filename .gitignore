@@ -24,3 +24,15 @@ _ide_*
 *ignore-
 .phpstorm.meta.php
 composer.lock
+*no*commit*
+*No*Commit*
+*NO*COMMIT*
+*.bkp.*
+*.bkp
+*.log
+*.out
+*.zip
+_ide_helper*
+*.env
+*.env.bkp
+*.env.backup

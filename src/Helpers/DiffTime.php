@@ -81,6 +81,7 @@ class DiffTime
 
         $startDate = $startDate instanceof Carbon ? $startDate : Carbon::parse($startDate);
         $endDate = $endDate instanceof Carbon ? $endDate : Carbon::parse($endDate);
+
         return $startDate->{$diffMethod}($endDate);
     }
 
@@ -155,6 +156,7 @@ class DiffTime
 
         $this->end = $end instanceof Carbon ? $end : Carbon::parse($end);
     }
+
     /**
      * @return void
      */

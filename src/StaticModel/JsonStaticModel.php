@@ -33,9 +33,7 @@ class JsonStaticModel implements StaticModelInterface
         $cacheKey = StringHelpers::classNameSlug(self::class) . '-' . StringHelpers::classNameSlug(static::class);
 
         if (!static::$ignoreCache) {
-            return collect(Cache::remember($cacheKey, static::$cacheTime /*secs*/, function () {
-                return static::$json_path ? json_decode(file_get_contents(static::$json_path), true) ?? [] : [];
-            }));
+            return collect(Cache::remember($cacheKey, static::$cacheTime /*secs*/, fn () => static::$json_path ? json_decode(file_get_contents(static::$json_path), true) ?? [] : []));
         }
 
         return collect(static::$json_path ? json_decode(file_get_contents(static::$json_path), true) ?? [] : []);
