@@ -563,3 +563,95 @@ if (!function_exists('numbers_only')) {
         return preg_replace('/\D/', '', $value);
     }
 }
+
+if (!function_exists('f2_to_string_or_null')) {
+    /**
+     * function f2_to_string_or_null
+     *
+     * @param mixed $value
+     * @param null|Closure $catch
+     *
+     * @return ?string
+     */
+    function f2_to_string_or_null(mixed $value, null|Closure $catch = null): ?string
+    {
+        try {
+            if (is_object($value) && is_a($value, Closure::class)) {
+                $value = $value();
+            }
+
+            if (is_string($value) || is_null($value)) {
+                return $value;
+            }
+
+            if (is_array($value)) {
+                return json_encode($value, 64);
+            }
+
+            if (is_object($value) && method_exists($value, 'toJson')) {
+                return (string) $value?->toJson();
+            }
+
+            if (is_object($value) && method_exists($value, 'toArray')) {
+                return json_encode($value?->toArray(), 64);
+            }
+
+            if (is_object($value) && method_exists($value, '__toString')) {
+                return (string) $value?->__toString();
+            }
+
+            if (is_object($value) && method_exists($value, 'toString')) {
+                return (string) $value?->toString();
+            }
+
+            if (is_bool($value)) {
+                return $value ? 'true' : 'false';
+            }
+
+            if (is_numeric($value)) {
+                return (string) $value;
+            }
+
+            return (string) $value;
+        } catch (Throwable $th) {
+            if ($catch) {
+                try {
+                    $catch($th);
+                } catch (Throwable $th) {
+                    //
+                }
+            }
+
+            return null;
+        }
+    }
+}
+
+if (!function_exists('to_string_or_null')) {
+    /**
+     * function to_string_or_null
+     *
+     * @param mixed $value
+     * @param null|Closure $catch
+     *
+     * @return ?string
+     */
+    function to_string_or_null(mixed $value, null|Closure $catch = null): ?string
+    {
+        return f2_to_string_or_null($value, $catch);
+    }
+}
+
+if (!function_exists('to_string')) {
+    /**
+     * function to_string
+     *
+     * @param mixed $value
+     *
+     * @return ?string
+     */
+    function to_string(mixed $value): ?string
+    {
+        return f2_to_string_or_null($value);
+    }
+}
