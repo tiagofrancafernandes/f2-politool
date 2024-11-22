@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use TiagoF2\Expansions\CollectionExpansion;
 use TiagoF2\Helpers\StringHelpers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -743,5 +744,69 @@ if (!function_exists('chain')) {
     function chain(mixed $object, string $chainNotation, mixed $default = null): mixed
     {
         return f2_chain($object, $chainNotation, $default);
+    }
+}
+
+if (! function_exists('collect')) {
+    /**
+     * Create a collection from the given value.
+     *
+     * @template TKey of array-key
+     * @template TValue
+     *
+     * @param  \Illuminate\Contracts\Support\Arrayable<TKey, TValue>|iterable<TKey, TValue>|null  $value
+     * @return \Illuminate\Support\Collection<TKey, TValue>
+     */
+    function collect($value = []): Collection|CollectionExpansion
+    {
+        return new CollectionExpansion($value);
+    }
+}
+
+if (!function_exists('expanded_collection')) {
+    /**
+     * function expanded_collection
+     *
+     * @param mixed $value
+     *
+     * @return Collection
+     */
+    function expanded_collection(mixed $value = null): Collection|CollectionExpansion
+    {
+        $value = is_null($value) ? [] : $value;
+        $value = is_iterable($value) ? $value : ['data' => $value];
+
+        /** @var Collection $collection */
+        $collection = new CollectionExpansion($value);
+
+        return $collection;
+    }
+}
+
+if (!function_exists('f2_collect')) {
+    /**
+     * alias to `expanded_collection`
+     *
+     * @param mixed $value
+     *
+     * @return Collection
+     */
+    function f2_collect(mixed $value = null): Collection|CollectionExpansion
+    {
+        return expanded_collection($value);
+    }
+}
+
+if (!function_exists('xcollect')) {
+    /**
+     * alias to `expanded_collection`
+     *
+     * @param mixed $value
+     *
+     * @return Collection
+     */
+    function xcollect(mixed $value = null): Collection|CollectionExpansion
+    {
+        return expanded_collection($value);
     }
 }
