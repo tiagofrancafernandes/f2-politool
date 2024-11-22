@@ -648,10 +648,80 @@ if (!function_exists('to_string')) {
      *
      * @param mixed $value
      *
-     * @return ?string
+     * @return string
      */
-    function to_string(mixed $value): ?string
+    function to_string(mixed $value): string
     {
-        return f2_to_string_or_null($value);
+        return (string) f2_to_string_or_null($value);
+    }
+}
+
+if (!function_exists('f2_chain')) {
+    /**
+     * function f2_chain
+     *
+     * @param mixed $object
+     * @param string $chainNotation
+     * @param mixed $default
+     *
+     * `// f2_chain(str('Tiago França'), 'slug.camel')` // tiagoFranca
+     * `// f2_chain(str('Tiago França'), 'slug->camel')` // tiagoFranca
+     * `// f2_chain(str('Tiago França'), 'slug?->camel')` // tiagoFranca
+     *
+     * @return mixed
+     */
+    function f2_chain(mixed $object, string $chainNotation, mixed $default = null): mixed
+    {
+        if (is_null($object)) {
+            return $default;
+        }
+
+        if (!is_object($object)) {
+            return $object;
+        }
+
+        $chainNotation = collect(explode(
+            '_NOTATION_',
+            str_replace([
+                '?->',
+                '->',
+                '|',
+                '::',
+                '=>',
+                '.'
+            ], '_NOTATION_', $chainNotation)
+        ))->map(fn ($item) => trim($item));
+        // ->filter(fn($item) => filled($item))->toArray() // Talvez seja melhor dar erro em caso de invalid chain
+
+        if (!$chainNotation) {
+            return $object;
+        }
+
+        $validKey = fn ($value) => preg_match('/^([a-zA-Z_]){1}([a-zA-Z0-9_]){0,}$/', $value) > 0;
+        $noArgsMethod = fn ($value) => preg_match('/^([a-zA-Z_]){1}([a-zA-Z0-9_]){0,}\(\)$/', $value) > 0;
+
+        $newObject = $object;
+
+        foreach ($chainNotation as $toCall) {
+            if (is_null($newObject)) {
+                continue;
+            }
+
+            $isMethod = $noArgsMethod($toCall);
+
+            if ($isMethod) {
+                $newObject = $newObject?->{$toCall}() ?? $default;
+
+                continue;
+            }
+
+            if (!$isMethod && !$validKey($toCall)) {
+                // invalid chain
+            }
+
+            $newObject = $newObject?->{$toCall} ?? $default;
+        }
+
+        return $newObject ?? $default;
     }
 }
