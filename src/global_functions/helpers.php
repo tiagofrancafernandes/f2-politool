@@ -725,3 +725,23 @@ if (!function_exists('f2_chain')) {
         return $newObject ?? $default;
     }
 }
+
+if (!function_exists('chain')) {
+    /**
+     * alias to `f2_chain` function
+     *
+     * @param mixed $object
+     * @param string $chainNotation
+     * @param mixed $default
+     *
+     * `// chain(str('Tiago França'), 'slug.camel')` // tiagoFranca
+     * `// chain(str('Tiago França'), 'slug->camel')` // tiagoFranca
+     * `// chain(str('Tiago França'), 'slug?->camel')` // tiagoFranca
+     *
+     * @return mixed
+     */
+    function chain(mixed $object, string $chainNotation, mixed $default = null): mixed
+    {
+        return f2_chain($object, $chainNotation, $default);
+    }
+}
