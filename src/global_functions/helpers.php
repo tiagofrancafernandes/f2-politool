@@ -223,7 +223,7 @@ if (!function_exists('domain_or_null')) {
      * @return ?string
      * @param ?string $protocol
      */
-    function domain_or_null(mixed $value, ?string $protocol = null): ?string
+    function domain_or_null(mixed $value, ?string $protocol = null, bool $withTld = true): ?string
     {
         $value = str_or_null($value);
 
@@ -233,7 +233,13 @@ if (!function_exists('domain_or_null')) {
 
         $fullURL = url_or_null($value, $protocol ?: 'https://');
 
-        return $fullURL ? parse_url($fullURL, PHP_URL_HOST) : null;
+        $result = $fullURL ? parse_url($fullURL, PHP_URL_HOST) : null;
+
+        if (!$withTld) {
+            return $result;
+        }
+
+        return str_contains($result, '.'); // TODO: melhorar
     }
 }
 
