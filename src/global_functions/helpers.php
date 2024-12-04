@@ -2,10 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use TiagoF2\Expansions\CollectionExpansion;
 use TiagoF2\Helpers\StringHelpers;
 use Illuminate\Database\Eloquent\Model;
+use TiagoF2\Expansions\CollectionExpansion;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Fluent;
 
 if (!function_exists('classNameSlug')) {
     /**
@@ -59,6 +60,10 @@ if (!function_exists('str_or_null')) {
      */
     function str_or_null(mixed $value): ?string
     {
+        if (is_null($value)) {
+            return null;
+        }
+
         return filter_var($value, FILTER_DEFAULT, FILTER_NULL_ON_FAILURE);
     }
 }
@@ -168,7 +173,11 @@ if (!function_exists('try_str_or_null')) {
     function try_str_or_null(mixed $value): ?string
     {
         try {
-            if (is_array($value)) {
+            if (is_null($value)) {
+                return null;
+            }
+
+            if (is_array($value) || is_object($value)) {
                 return json_encode($value, 64);
             }
 
@@ -190,6 +199,10 @@ if (!function_exists('url_or_null')) {
      */
     function url_or_null(mixed $value, ?string $protocol = null): ?string
     {
+        if (is_null($value)) {
+            return null;
+        }
+
         $value = str_or_null($value);
 
         if (!$value) {
@@ -225,6 +238,10 @@ if (!function_exists('domain_or_null')) {
      */
     function domain_or_null(mixed $value, ?string $protocol = null, bool $withTld = true): ?string
     {
+        if (is_null($value)) {
+            return null;
+        }
+
         $value = str_or_null($value);
 
         if (!$value) {
@@ -253,6 +270,10 @@ if (!function_exists('int_or_null')) {
      */
     function int_or_null(mixed $value): ?int
     {
+        if (is_null($value)) {
+            return null;
+        }
+
         return filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
     }
 }
@@ -314,6 +335,10 @@ if (!function_exists('bool_or_null')) {
      */
     function bool_or_null(mixed $value): ?bool
     {
+        if (is_null($value)) {
+            return null;
+        }
+
         return filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
     }
 }
@@ -491,7 +516,7 @@ if (!function_exists('array_in_array')) {
     }
 }
 
-if (! function_exists('f2_request')) {
+if (!function_exists('f2_request')) {
     /**
      * Get an instance of the current request or an input item from the request.
      *
@@ -526,7 +551,7 @@ if (! function_exists('f2_request')) {
     }
 }
 
-if (! function_exists('request')) {
+if (!function_exists('request')) {
     /**
      * Get an instance of the current request or an input item from the request.
      *
@@ -571,6 +596,21 @@ if (!function_exists('numbers_only')) {
     }
 }
 
+if (!function_exists('f2_try_to_string')) {
+    /**
+     * function f2_try_to_string
+     *
+     * @param mixed $value
+     * @param null|Closure $catch
+     *
+     * @return ?string
+     */
+    function f2_try_to_string(mixed $value, null|Closure $catch = null): ?string
+    {
+        return StringHelpers::tryToString(value: $value, catch: $catch);
+    }
+}
+
 if (!function_exists('f2_to_string_or_null')) {
     /**
      * function f2_to_string_or_null
@@ -582,55 +622,7 @@ if (!function_exists('f2_to_string_or_null')) {
      */
     function f2_to_string_or_null(mixed $value, null|Closure $catch = null): ?string
     {
-        try {
-            if (is_object($value) && is_a($value, Closure::class)) {
-                $value = $value();
-            }
-
-            if (is_string($value) || is_null($value)) {
-                return $value;
-            }
-
-            if (is_array($value)) {
-                return json_encode($value, 64);
-            }
-
-            if (is_object($value) && method_exists($value, 'toJson')) {
-                return (string) $value?->toJson();
-            }
-
-            if (is_object($value) && method_exists($value, 'toArray')) {
-                return json_encode($value?->toArray(), 64);
-            }
-
-            if (is_object($value) && method_exists($value, '__toString')) {
-                return (string) $value?->__toString();
-            }
-
-            if (is_object($value) && method_exists($value, 'toString')) {
-                return (string) $value?->toString();
-            }
-
-            if (is_bool($value)) {
-                return $value ? 'true' : 'false';
-            }
-
-            if (is_numeric($value)) {
-                return (string) $value;
-            }
-
-            return (string) $value;
-        } catch (Throwable $th) {
-            if ($catch) {
-                try {
-                    $catch($th);
-                } catch (Throwable $th) {
-                    //
-                }
-            }
-
-            return null;
-        }
+        return StringHelpers::tryToString(value: $value, catch: $catch);
     }
 }
 
@@ -646,6 +638,20 @@ if (!function_exists('to_string_or_null')) {
     function to_string_or_null(mixed $value, null|Closure $catch = null): ?string
     {
         return f2_to_string_or_null($value, $catch);
+    }
+}
+
+if (!function_exists('f2_to_string')) {
+    /**
+     * function f2_to_string
+     *
+     * @param mixed $value
+     *
+     * @return string
+     */
+    function f2_to_string(mixed $value): string
+    {
+        return (string) f2_to_string_or_null($value);
     }
 }
 
@@ -753,7 +759,7 @@ if (!function_exists('chain')) {
     }
 }
 
-if (! function_exists('collect')) {
+if (!function_exists('collect')) {
     /**
      * Create a collection from the given value.
      *
@@ -814,5 +820,255 @@ if (!function_exists('xcollect')) {
     function xcollect(mixed $value = null): Collection|CollectionExpansion
     {
         return expanded_collection($value);
+    }
+}
+
+if (!function_exists('tf_array_or_null')) {
+    /**
+     * function tf_array_or_null
+     *
+     * @param mixed $value
+     *
+     * @return ?array
+     */
+    function tf_array_or_null(mixed $value): ?array
+    {
+        return is_array($value) ? $value : null;
+    }
+}
+
+if (!function_exists('array_or_null')) {
+    /**
+     * function array_or_null
+     *
+     * alias to `tf_array_or_null` function
+     *
+     * @param mixed $value
+     *
+     * @return ?array
+     */
+    function array_or_null(mixed $value): ?array
+    {
+        return tf_array_or_null($value);
+    }
+}
+
+if (!function_exists('f2_data_case_get')) {
+    /**
+     * function f2_data_case_get
+     *
+     * @param mixed $data
+     * @param string $key
+     * @param mixed $default
+     *
+     * @return mixed
+     */
+    function f2_data_case_get(
+        mixed $data,
+        string $key,
+        mixed $default = null,
+    ): mixed {
+        /** @var CollectionExpansion */
+        $data = f2_collect(is_iterable($data) ? $data : []);
+
+        if ($data?->has($key)) {
+            return $data?->get($key, $default);
+        }
+
+        $alterKeys = ['snake', 'slug', 'camel', 'upper', 'lower'];
+
+        foreach ($alterKeys as $fn) {
+            $_key = str($key)->{$fn}()?->toString();
+
+            if ($data?->has($_key)) {
+                return $data?->get($_key, $default);
+            }
+        }
+
+        foreach ($alterKeys as $fn) {
+            $_key = str($key)->replace(['-'], '_')->{$fn}()?->toString();
+
+            if ($data?->has($_key)) {
+                return $data?->get($_key, $default);
+            }
+        }
+
+        return $default;
+    }
+}
+
+if (!function_exists('f2_numbers_and_dot_only')) {
+    /**
+     * function f2_numbers_and_dot_only
+     *
+     * @param mixed $value
+     * @param bool $acceptDot
+     *
+     * @return string
+     */
+    function f2_numbers_and_dot_only(mixed $value, bool $acceptDot = true): string
+    {
+        $value = is_numeric($value) || is_string($value) || is_a($value, Stringable::class) ? strval($value) : '';
+
+        return $acceptDot ? preg_replace('/[^\d.]/i', '', $value) : preg_replace('/\D/', '', $value);
+    }
+}
+
+if (!function_exists('f2_bool_or_null')) {
+    /**
+     * function f2_bool_or_null
+     *
+     * @param mixed $value
+     *
+     * @return ?bool
+     */
+    function f2_bool_or_null(mixed $value): ?bool
+    {
+        if (is_null($value)) {
+            return null;
+        }
+
+        return filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+    }
+}
+
+if (!function_exists('f2_str_or_null')) {
+    /**
+     * function f2_str_or_null
+     *
+     * @param mixed $value
+     *
+     * @return ?string
+     */
+    function f2_str_or_null(mixed $value): ?string
+    {
+        if (is_null($value)) {
+            return null;
+        }
+
+        return filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+    }
+}
+
+if (!function_exists('f2_array_or_null')) {
+    /**
+     * function f2_array_or_null
+     *
+     * @param mixed $value
+     *
+     * @return ?array
+     */
+    function f2_array_or_null(mixed $value): ?array
+    {
+        return is_array($value) ? $value : null;
+    }
+}
+
+if (!function_exists('f2_fluent')) {
+    /**
+     * Create an Fluent object from the given value.
+     *
+     * @param  object|array  $value
+     * @return Fluent
+     */
+    function f2_fluent(mixed $value = [], string $valueKey = 'value'): Fluent
+    {
+        if (is_object($value) && is_a($value, Fluent::class)) {
+            return $value;
+        }
+
+        $valueKey = filled($valueKey) ? trim($valueKey) : 'value';
+
+        return new Fluent(is_iterable($value) ? $value : [
+            $valueKey => $value,
+        ]);
+    }
+}
+
+if (!function_exists('f2_try')) {
+    /**
+     * function f2_try
+     *
+     * @param Closure $value
+     * @param null|Closure $catch
+     *
+     * @return mixed
+     */
+    function f2_try(Closure $value, null|Closure $catch = null, mixed ...$args): mixed
+    {
+        try {
+            return call_user_func($value, ...$args);
+        } catch (Throwable $th) {
+            if ($catch) {
+                try {
+                    $catch($th);
+                } catch (Throwable $th) {
+                    return null;
+                }
+            }
+
+            return null;
+        }
+    }
+}
+
+if (!function_exists('f2_try_or')) {
+    /**
+     * function f2_try_or
+     *
+     * @param Closure $value
+     * @param mixed $default
+     * @param null|Closure $catch
+     *
+     * @return mixed
+     */
+    function f2_try_or(Closure $value, mixed $default = null, null|Closure $catch = null, mixed ...$args): mixed
+    {
+        try {
+            return call_user_func($value, ...$args);
+        } catch (Throwable $th) {
+            if ($catch) {
+                try {
+                    $catch($th);
+                } catch (Throwable $th) {
+                    return $default;
+                }
+            }
+
+            return $default;
+        }
+    }
+}
+
+if (!function_exists('f2_first_filled')) {
+    /**
+     * function f2_first_filled
+     *
+     * @param mixed ...$values
+     * @return mixed
+     */
+    function f2_first_filled(mixed ...$values): mixed
+    {
+        foreach ($values as $value) {
+            if (filled($value)) {
+                return $value;
+            }
+        }
+
+        return null;
+    }
+}
+
+if (!function_exists('first_filled')) {
+    /**
+     * alias to `f2_first_filled` function
+     *
+     * @param mixed ...$values
+     *
+     * @return mixed
+     */
+    function first_filled(mixed ...$values): mixed
+    {
+        return f2_first_filled(...$values);
     }
 }
