@@ -379,7 +379,7 @@ if (!function_exists('bool_or_null')) {
             return null;
         }
 
-        return filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+        return filter_var($value, FILTER_DEFAULT, FILTER_NULL_ON_FAILURE);
     }
 }
 
