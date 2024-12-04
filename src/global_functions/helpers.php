@@ -260,15 +260,15 @@ if (!function_exists('domain_or_null')) {
     }
 }
 
-if (!function_exists('int_or_null')) {
+if (!function_exists('f2_int_or_null')) {
     /**
-     * function int_or_null
+     * function f2_int_or_null
      *
      * @param mixed $value
      *
      * @return ?int
      */
-    function int_or_null(mixed $value): ?int
+    function f2_int_or_null(mixed $value): ?int
     {
         if (is_null($value)) {
             return null;
@@ -278,9 +278,23 @@ if (!function_exists('int_or_null')) {
     }
 }
 
-if (!function_exists('file_head_lines')) {
+if (!function_exists('int_or_null')) {
     /**
-     * function file_head_lines
+     * alias to function `f2_int_or_null`
+     *
+     * @param mixed $value
+     *
+     * @return ?int
+     */
+    function int_or_null(mixed $value): ?int
+    {
+        return f2_int_or_null($value);
+    }
+}
+
+if (!function_exists('f2_file_head_lines')) {
+    /**
+     * function f2_file_head_lines
      *
      * @param string $filePath
      * @param int $lines = 5
@@ -289,7 +303,7 @@ if (!function_exists('file_head_lines')) {
      *
      * @return array|string
      */
-    function file_head_lines(
+    function f2_file_head_lines(
         string $filePath,
         int $lines = 5,
         bool $toString = true,
@@ -322,6 +336,32 @@ if (!function_exists('file_head_lines')) {
         fclose($handle);
 
         return $toString ? implode($separator ?? PHP_EOL, $content) : $content;
+    }
+}
+
+if (!function_exists('file_head_lines')) {
+    /**
+     * alias to `f2_file_head_lines` function
+     *
+     * @param string $filePath
+     * @param int $lines = 5
+     * @param bool $toString
+     * @param ?string $separator
+     *
+     * @return array|string
+     */
+    function file_head_lines(
+        string $filePath,
+        int $lines = 5,
+        bool $toString = true,
+        ?string $separator = PHP_EOL,
+    ): array|string {
+        return f2_file_head_lines(
+            $filePath,
+            $lines,
+            $toString,
+            $separator,
+        );
     }
 }
 
