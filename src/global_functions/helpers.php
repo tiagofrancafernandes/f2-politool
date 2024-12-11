@@ -256,7 +256,7 @@ if (!function_exists('domain_or_null')) {
             return $result;
         }
 
-        return str_contains($result, '.'); // TODO: melhorar
+        return str_contains($result, '.') ? $result : null; // TODO: melhorar
     }
 }
 
